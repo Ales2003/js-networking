@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Networking</title>
+</head>
+<body>
+
+<h1>This is a Networking explorasion</h1>
+
+
+</body>
+
+<script>
+
+    
+const URL = 'https://jsonplaceholder.typicode.com/photos/';
+
+// 1. Создаём новый XMLHttpRequest-объект
+let xhr = new XMLHttpRequest();
+
+xhr.onreadystatechange = function() {
+    if (xhr.readyState == 0) {
+        console.log('0 = UNSENT');
+    }
+    if (xhr.readyState == 1) {
+        console.log('1 = OPENED');
+    }
+    if (xhr.readyState == 2) {
+        console.log('2 = HEADERS_RECEIVED');
+    }
+    if (xhr.readyState == 3) {
+        console.log('3  = LOADING');
+    }
+    if (xhr.readyState == 4) {
+        console.log('4  = DONE');
+    }
+};
+
+// 2. Настраиваем его: GET-запрос по URL
+//если синзронный - нельзя устанваливать таймаут
+xhr.open('GET', URL, true);
+
+//Optionall
+xhr.timeout = 10000; // таймаут указывается в миллисекундах, т.е. 10 секунд
+
+//read request headers
+let headers = xhr
+  .getAllResponseHeaders()
+  .split('\r\n')
+  .reduce((result, current) => {
+    let [name, value] = current.split(': ');
+    result[name] = value;
+    return result;
+  }, {});
+
+console.log('headers', headers);
+
+// 3. Отсылаем запрос
+xhr.send();
+
+
+
+
+
+// 4. Этот код сработает после того, как мы получим ответ сервера
+xhr.onload = function() {
+  if (xhr.status != 200) { // анализируем HTTP-статус ответа, если статус не 200, то произошла ошибка
+    console.log(`Ошибка ${xhr.status}: ${xhr.statusText}`); // Например, 404: Not Found
+  } else { // если всё прошло гладко, выводим результат
+    console.log(`Готово, получили ${xhr.response.length} байт`); // response -- это ответ сервера
+    //console.log(JSON.stringify(xhr.response));
+  }
+};
+
+xhr.onprogress = function(event) {
+  if (event.lengthComputable) {
+    console.log(`Получено ${event.loaded} из ${event.total} байт`);
+  } else {
+    console.log(`Получено ${event.loaded} байт`); // если в ответе нет заголовка Content-Length
+  }
+
+};
+
+xhr.onerror = function() {
+    console.log("Запрос не удался");
+};
+
+
+</script>
+
+</html>
